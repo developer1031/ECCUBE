@@ -1,0 +1,11 @@
+eccube.event.render.product_detail.before:
+    - [onRenderProductDetailBefore, NORMAL]
+
+eccube.event.route.shopping_login.response:
+    - [onRouteShoppingLoginResponse, NORMAL]
+
+eccube.event.route.entry.response:
+    - [onRouteEntryResponse, NORMAL]
+
+eccube.event.route.shopping_nonmember.response:
+    - [onRouteShoppingNonmemberResponse, NORMAL]

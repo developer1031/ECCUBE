@@ -1,0 +1,8 @@
+.form-group .formError + .form-control {
+  margin-left: 0;
+}
+
+.form-group .formError + .form-control + .form-control,
+.form-group .form-control + .formError + .form-control {
+  margin-left: 2%;
+}

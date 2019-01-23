@@ -1,0 +1,34 @@
+Plugin\Efo\Entity\CustomerProperty:
+    type: entity
+    table: plg_efo_customer_property
+    repositoryClass: Plugin\Efo\Repository\CustomerPropertyRepository
+    id:
+        id:
+            type: integer
+            unsigned: false
+            nullable: false
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        property:
+            type: string
+            length: 255
+            nullable: false
+        label:
+            type: string
+            length: 255
+            nullable: false
+        enabled:
+            type: boolean
+            nullable: false
+        rank:
+            type: integer
+            nullable: false
+        create_date:
+            type: datetime
+            nullable: false
+        update_date:
+            type: datetime
+            nullable: false
+    lifecycleCallbacks: {  }

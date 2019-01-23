@@ -1,0 +1,115 @@
+{% extends 'default_frame.twig' %}
+
+{% set menus = ['product', 'product_plugin_efo_entry_form'] %}
+
+{% block title %}注文フォーム管理{% endblock %}
+{% block sub_title %}注文フォーム編集{% endblock %}
+
+{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
+
+{% block main %}
+  <div class="row" id="aside_wrap">
+    <form name="form1" method="post" action="{{ url('plugin_Efo_admin_entry_form_update', {id: EntryForm.id}) }}">
+      <input type="hidden" name="_method" value="PUT">
+      {{ form_widget(form._token) }}
+
+      <div id="detail_wrap" class="col-md-12">
+        <div class="col_inner">
+          <div id="number_info_box" class="box no-header">
+            <div id="number_info_box__body" class="box-body">
+              <div class="row">
+                <div class="col-sm-6 col-sm-offset-2">
+                  <p>
+                    <svg class="cb cb-clock">
+                      <use xlink:href="#cb-clock"/>
+                    </svg>
+                    作成日時：{{ EntryForm.create_date|date('Y/m/d H:i:s') }}
+                  </p>
+                  <p>
+                    <svg class="cb cb-clock">
+                      <use xlink:href="#cb-clock"/>
+                    </svg>
+                    更新日時：{{ EntryForm.update_date|date('Y/m/d H:i:s') }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box accordion">
+          <div class="box-header toggle active">
+            <h3 class="box-title">注文フォーム
+              <svg class="cb cb-angle-down icon_down">
+                <use xlink:href="#cb-angle-down"/>
+              </svg>
+            </h3>
+          </div>
+          <div class="box-body accpanel" style="display: block;">
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-sm-3 col-lg-2">
+                  注文フォーム名
+                </label>
+                <div class="col-sm-9 col-lg-10">
+                  {{ form_widget(form.name) }}
+                  {{ form_errors(form.name) }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label col-sm-3 col-lg-2">
+                  URL
+                </label>
+                <div class="col-sm-9 col-lg-10">
+                  <div class="input-group">
+                    <span class="input-group-addon">
+                      {{ url('homepage') }}
+                    </span>
+                    {{ form_widget(form.path) }}
+                  </div>
+
+                  {{ form_errors(form.path) }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label col-sm-3 col-lg-2">
+                  注文フォームに表示する商品
+                </label>
+                <div class="col-sm-9 col-lg-10">
+                  {{ form_widget(form.Product) }}
+                  {{ form_errors(form.Product) }}
+                </div>
+              </div>
+
+              <div class="form-horizontal">
+                <div class="form-group">
+                  <label class="control-label col-sm-3 col-lg-2">
+                    会員登録へのリンク
+                  </label>
+                  <div class="col-sm-9 col-lg-10">
+                    {{ form_widget(form.customer_registration_enabled) }}
+                    {{ form_errors(form.customer_registration_enabled) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row btn_area">
+            <p class="col-xs-8 col-xs-offset-2 col-sm-4 col-sm-offset-4 text-center">
+              <button type="submit" class="btn btn-primary btn-block btn-lg" name="mode" value="register">注文フォームを更新</button>
+            </p>
+          </div>
+
+          <div class="row hidden-xs hidden-sm">
+            <div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 text-center btn_area">
+              <p><a href="{{ url('plugin_Efo_admin_entry_form_index') }}">戻る</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}

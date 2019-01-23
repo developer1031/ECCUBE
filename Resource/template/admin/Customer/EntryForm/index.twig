@@ -1,0 +1,97 @@
+{% extends 'default_frame.twig' %}
+
+{% set menus = ['customer', 'plugin_efo_customer_form'] %}
+
+{% block title %}会員登録フォーム管理{% endblock %}
+{% block sub_title %}会員登録フォーム編集{% endblock %}
+
+{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{{ app.config.admin_urlpath }}/assets/css/bootstrap-datetimepicker.min.css">
+{% endblock stylesheet %}
+
+{% block javascript %}
+  <script src="{{ app.config.admin_urlpath }}/assets/js/vendor/moment.min.js"></script>
+  <script src="{{ app.config.admin_urlpath }}/assets/js/vendor/moment-ja.js"></script>
+  <script src="{{ app.config.admin_urlpath }}/assets/js/vendor/bootstrap-datetimepicker.min.js"></script>
+  <script>
+    $(function () {
+    });
+  </script>
+{% endblock javascript %}
+
+{% block main %}
+  <form name="form1" method="post" action="{{ url('plugin_Efo_admin_customer_entry_form_store') }}">
+    {{ form_widget(form._token) }}
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box accordion">
+          <div class="box-header toggle active">
+            <h3 class="box-title">会員登録フォーム
+              <svg class="cb cb-angle-down icon_down">
+                <use xlink:href="#cb-angle-down"/>
+              </svg>
+            </h3>
+          </div>
+          <div class="box-body accpanel" style="display: block;">
+            <table class="table">
+              <thead>
+              <tr>
+                <th>入力項目</th>
+                <th>表示</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for property in form.properties %}
+                <tr>
+                  <td>
+                    {{ form_widget(property.label) }}
+                    {{ form_errors(property.label) }}
+                  </td>
+                  <td>
+                    {{ form_widget(property.enabled) }}
+                    {{ form_errors(property.enabled) }}
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-12">
+        <div class="box accordion">
+          <div class="box-header toggle active">
+            <h3 class="box-title">カート画面からの購入手続き
+              <svg class="cb cb-angle-down icon_down">
+                <use xlink:href="#cb-angle-down"/>
+              </svg>
+            </h3>
+          </div>
+          <div class="box-body accpanel" style="display: block;">
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-sm-3 col-lg-2">
+                  非ログイン状態での振る舞い
+                </label>
+                <div class="col-sm-9 col-lg-10">
+                  {{ form_widget(form.shopping_login_destination) }}
+                  {{ form_errors(form.shopping_login_destination) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row btn_area">
+        <p class="col-xs-8 col-xs-offset-2 col-sm-4 col-sm-offset-4 text-center">
+          <button type="submit" class="btn btn-primary btn-block btn-lg" name="mode" value="register">会員登録フォームを更新</button>
+        </p>
+      </div>
+    </div>
+  </form>
+{% endblock %}

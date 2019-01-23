@@ -1,0 +1,22 @@
+Plugin\Efo\Entity\Config:
+    type: entity
+    table: plg_efo_config
+    repositoryClass: Plugin\Efo\Repository\ConfigRepository
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            id: true
+    fields:
+        shopping_login_destination:
+            type: integer
+            nullable: false
+            unsigned: false
+        create_date:
+            type: datetime
+            nullable: false
+        update_date:
+            type: datetime
+            nullable: false
+    lifecycleCallbacks: {  }

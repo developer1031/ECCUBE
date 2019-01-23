@@ -1,0 +1,54 @@
+Plugin\Efo\Entity\EntryForm:
+    type: entity
+    table: plg_efo_entry_form
+    repositoryClass: Plugin\Efo\Repository\EntryFormRepository
+    id:
+        id:
+            type: integer
+            unsigned: false
+            nullable: false
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+            nullable: false
+        path:
+            type: string
+            length: 1024
+            nullable: false
+        product_id:
+            type: integer
+            unsigned: false
+            nullable: false
+        page_id:
+            type: integer
+            unsigned: false
+            nullable: false
+        customer_registration_enabled:
+            type: boolean
+            nullable: false
+        create_date:
+            type: datetime
+            nullable: false
+        update_date:
+            type: datetime
+            nullable: false
+        del_flg:
+            type: smallint
+            nullable: false
+            default: 0
+    oneToOne:
+        Product:
+            targetEntity: \Eccube\Entity\Product
+            joinColumn:
+                name: product_id
+                referencedColumnName: product_id
+        PageLayout:
+            targetEntity: \Eccube\Entity\PageLayout
+            joinColumn:
+                name: page_id
+                referencedColumnName: page_id
+    lifecycleCallbacks: {  }

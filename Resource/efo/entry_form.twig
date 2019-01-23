@@ -1,0 +1,299 @@
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'product_page' %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{{ app.config.efo_assets_urlpath }}/jQuery-Validation-Engine/css/validationEngine.jquery.css">
+  <link rel="stylesheet" href="{{ app.config.efo_assets_urlpath }}/entry-form.css">
+{% endblock %}
+
+{% block javascript %}
+  <script src="//ajaxzip3.github.io/ajaxzip3.js" charset="UTF-8"></script>
+  <script src="{{ app.config.efo_assets_urlpath }}/autoKana/jquery.autoKana.js"></script>
+  <script src="{{ app.config.efo_assets_urlpath }}/jQuery-Validation-Engine/js/languages/jquery.validationEngine-ja.js"></script>
+  <script src="{{ app.config.efo_assets_urlpath }}/jQuery-Validation-Engine/js/jquery.validationEngine.js"></script>
+  <script src="{{ app.config.efo_assets_urlpath }}/jquery.deserialize.min.js"></script>
+  <script src="{{ app.config.efo_assets_urlpath }}/js.cookie.js"></script>
+  <script src="{{ app.config.efo_assets_urlpath }}/entry-form.js"></script>
+
+  <script type="text/javascript">
+    eccube.classCategories = {{ Product.class_categories|json_encode|raw }};
+
+    var groupedDeliveryTimes = {{ deliveryTimes|json_encode|raw }};
+
+    var selectedClassCategoryId2;
+    {% if (form.add_cart.classcategory_id2 is defined) and (form.add_cart.classcategory_id2.vars.value != '') %}
+    selectedClassCategoryId2 = {{ form.add_cart.classcategory_id2.vars.value|json_encode|raw }};
+    {% elseif defaults.add_cart.classcategory_id2 is defined %}
+    selectedClassCategoryId2 = {{ defaults.add_cart.classcategory_id2|json_encode|raw }};
+    {% endif %}
+  </script>
+{% endblock %}
+
+{% block main %}
+  {# 注文フォーム #}
+  <form method="post" action="{{ url(EntryForm.index_route) }}" id="form1">
+    <div id="item_detail">
+      <div class="row2">
+        <!--★画像★-->
+        <div id="item_photo_area" class="col-sm-6">
+          <div id="detail_image_box__slides" class="slides">
+            {% if Product.ProductImage|length > 0 %}
+              {% for ProductImage in Product.ProductImage %}
+                <div id="detail_image_box__item--{{ loop.index }}"><img src="{{ app.config.image_save_urlpath }}/{{ ProductImage|no_image_product }}"/></div>
+              {% endfor %}
+            {% else %}
+              <div id="detail_image_box__item"><img src="{{ app.config.image_save_urlpath }}/{{ ''|no_image_product }}"/></div>
+            {% endif %}
+          </div>
+        </div>
+
+        <section id="item_detail_area" class="col-sm-6">
+          <!--★商品名★-->
+          <h3 class="item_name">{{ Product.name }}</h3>
+
+          <div class="item_detail">
+            <!--★通常価格★-->
+            {% if Product.hasProductClass -%}
+              {% if Product.getPrice01Min is not null and Product.getPrice01Min == Product.getPrice01Max %}
+                <p class="normal_price"> 通常価格：<span class="price01_default">{{ Product.getPrice01IncTaxMin|price }}</span> <span class="small">税込</span></p>
+              {% elseif Product.getPrice01Min is not null and Product.getPrice01Max is not null %}
+                <p class="normal_price"> 通常価格：<span class="price01_default">{{ Product.getPrice01IncTaxMin|price }}</span> ～ <span
+                    class="price01_default">{{ Product.getPrice01IncTaxMax|price }}</span> <span class="small">税込</span></p>
+              {% endif %}
+            {% else -%}
+              {% if Product.getPrice01Max is not null %}
+                <p class="normal_price"> 通常価格：<span class="price01_default">{{ Product.getPrice01IncTaxMin|price }}</span> <span class="small">税込</span></p>
+              {% endif %}
+            {% endif -%}
+
+            <!--★販売価格★-->
+            {% if Product.hasProductClass -%}
+              {% if Product.getPrice02Min == Product.getPrice02Max %}
+                <p class="sale_price text-primary"><span class="price02_default">{{ Product.getPrice02IncTaxMin|price }}</span> <span class="small">税込</span></p>
+              {% else %}
+                <p class="sale_price text-primary"><span class="price02_default">{{ Product.getPrice02IncTaxMin|price }}</span> ～ <span
+                    class="price02_default">{{ Product.getPrice02IncTaxMax|price }}</span> <span class="small">税込</span></p>
+              {% endif %}
+            {% else -%}
+              <p class="sale_price text-primary"><span class="price02_default">{{ Product.getPrice02IncTaxMin|price }}</span> <span class="small">税込</span></p>
+            {% endif -%}
+
+            <!--▼買い物かご-->
+            <div class="cart_area">
+              {% if Product.stock_find %}
+                {# 規格 #}
+                <dl class="quantity">
+                  <dt>セット内容：</dt>
+                  <dd>
+                    {# 規格1 #}
+                    {% if form.add_cart.classcategory_id1 is defined %}
+                      {{ form_widget(form.add_cart.classcategory_id1) }}
+                      {{ form_errors(form.add_cart.classcategory_id1) }}
+                    {% endif %}
+                    {# 規格2 #}
+                    {% if form.add_cart.classcategory_id2 is defined %}
+                      {{ form_widget(form.add_cart.classcategory_id2) }}
+                      {{ form_errors(form.add_cart.classcategory_id2) }}
+                    {% endif %}
+                  </dd>
+                </dl>
+
+                {# 数量 #}
+                <dl class="quantity">
+                  <dt>数量</dt>
+                  <dd>
+                    {{ form_widget(form.add_cart.quantity, {attr: {'min': 1}}) }}
+                    {{ form_errors(form.add_cart.quantity) }}
+                  </dd>
+                </dl>
+              {% else %}
+                {# 在庫がない場合は品切れボタンのみ表示 #}
+                <div class="btn_area">
+                  <ul class="row">
+                    <li class="col-xs-12 col-sm-8">
+                      <button type="button" class="btn btn-default btn-block" disabled="disabled">ただいま品切れ中です</button>
+                    </li>
+                  </ul>
+                </div>
+              {% endif %}
+            </div>
+            <!--▲買い物かご-->
+
+            <!--★商品説明★-->
+            <p class="item_comment">{{ Product.description_detail|raw|nl2br }}</p>
+          </div>
+        </section>
+        <!--詳細ここまで-->
+      </div>
+    </div>
+
+    <div class="dl_table">
+      {% if not loggedIn %}
+        <dl id="remind_form">
+          <dt>
+          </dt>
+          <dd>
+            <button id="fill-customer-button" type="button" class="btn btn-default">前回購入時の情報を使用する</button>
+            <br/>
+          </dd>
+        </dl>
+      {% endif %}
+
+      <dl>
+        <dt id="fst">
+          <label class="control-label required">お名前</label>
+          <span class="required">必須</span>
+        </dt>
+        <dd id="fst" class="form-group input_name">
+          {{ form_widget(form.nonmember.name.name01, {attr: {required: 'required', placeholder: '姓'}}) }}
+          {{ form_widget(form.nonmember.name.name02, {attr: {required: 'required', placeholder: '名'}}) }}
+          {{ form_errors(form.nonmember.name.name01) }}
+          {{ form_errors(form.nonmember.name.name02) }}
+        </dd>
+      </dl>
+
+      <dl>
+        <dt>
+          <label class="control-label required">お名前(フリガナ)</label>
+          <span class="required">必須</span>
+        </dt>
+        <dd class="form-group input_name">
+          {{ form_widget(form.nonmember.kana.kana01, {attr: {required: 'required', placeholder: 'セイ'}}) }}
+          {{ form_widget(form.nonmember.kana.kana02, {attr: {required: 'required', placeholder: 'メイ'}}) }}
+          {{ form_errors(form.nonmember.kana.kana01) }}
+          {{ form_errors(form.nonmember.kana.kana02) }}
+        </dd>
+      </dl>
+
+      {% if 'company_name' in enabledProperties %}
+        <dl>
+          <dt>{{ form_label(form.nonmember.company_name) }}</dt>
+          <dd class="form-group input_name">
+            {{ form_widget(form.nonmember.company_name, {attr: {class: 'form-contrl', placeholder: '会社名'}}) }}
+            {{ form_errors(form.nonmember.company_name) }}
+          </dd>
+        </dl>
+      {% endif %}
+
+      <dl>
+        <dt>
+          <label class="control-label required">住所</label>
+          <span class="required">必須</span>
+        </dt>
+        <dd>
+          <div class="form-group form-inline input_zip {% if form.nonmember.zip.zip01.vars.errors is not empty or form.nonmember.zip.zip02.vars.errors is not empty %}has-error{% endif %}">
+            {{ form_widget(form.nonmember.zip) }}
+          </div>
+          <div class="form-group">
+            {{ form_widget(form.nonmember.address) }}
+            {{ form_errors(form.nonmember.address) }}
+          </div>
+        </dd>
+      </dl>
+
+      <dl>
+        <dt>
+          <label class="control-label required">電話番号</label><span class="required">必須</span>
+        </dt>
+        <dd>
+          <div class="form-inline form-group input_tel">
+            {{ form_widget(form.nonmember.tel, {attr : {class : 'short'}}) }}
+            {{ form_errors(form.nonmember.tel) }}
+          </div>
+        </dd>
+      </dl>
+
+      <dl>
+        <dt>
+          <label class="control-label required">メールアドレス</label><span class="required">必須</span>
+        </dt>
+        <dd>
+          <div class="form-group {% if form.nonmember.email.first.vars.errors is not empty %}has-error{% endif %}">
+            {{ form_widget(form.nonmember.email.first, {type: 'email'}) }}
+          </div>
+          <div class="form-group {% if form.nonmember.email.second.vars.errors is not empty %}has-error{% endif %}">
+            {{ form_widget(form.nonmember.email.second, {type: 'email', attr: {placeholder: '確認のためもう一度入力してください'}}) }}
+            {{ form_errors(form.nonmember.email.first) }}
+            {{ form_errors(form.nonmember.email.second) }}
+          </div>
+        </dd>
+      </dl>
+
+      <a id="shipment"></a>
+      {% for shipping in Order.shippings %}
+        {% set idx = loop.index0 %}
+        <dl>
+          <dt>
+            <label>お支払方法</label>
+          </dt>
+          <dd>
+            <ul class="payment_list">
+              {% for key, child in form.shopping.payment %}
+                <li>
+                  {{ form_widget(child, {'attr': {'class': 'payment'}}) }}
+
+                  {% if form.shopping.payment.vars.choices[key].data.payment_image is not null %}
+                    <img src="{{ app.config.image_save_urlpath }}/{{ form.shopping.payment.vars.choices[key].data.payment_image }}">
+                  {% endif %}
+                  {# /選択肢の説明文 #}
+                </li>
+              {% endfor %}
+              {{ form_errors(form.shopping.payment) }}
+              {{ form_errors(form.shopping) }}
+            </ul>
+          </dd>
+        </dl>
+
+        <dl>
+          <dt><label>お届け日</label></dt>
+          <dd>
+            {{ form_widget(form.shippings[idx].shippingDeliveryDate) }}
+            {{ form_errors(form.shippings[idx].shippingDeliveryDate) }}
+          </dd>
+        </dl>
+
+        <dl>
+          <dt><label>お届け時間</label></dt>
+          <dd>
+            {{ form_widget(form.shippings[idx].deliveryTime) }}
+            {{ form_errors(form.shippings[idx].deliveryTime) }}
+          </dd>
+        </dl>
+        <dl>
+          <dt><label>配送方法</label></dt>
+          <dd>
+            {{ form_widget(form.shippings[idx].delivery, {'attr': {'class': 'delivery'}}) }}
+            {{ form_errors(form.shippings[idx].delivery) }}
+          </dd>
+        </dl>
+      {% endfor %}
+
+      <dl>
+        <dt id="last"><label>お問合せ</label></dt>
+        <dd id="last">
+          <div class="form-group">
+            {{ form_widget(form.shopping.message, {attr: {'placeholder': 'お問合せ事項がございましたら、こちらにご入力ください。(3000文字まで)', 'cols': 40, 'rows': 6, 'max-length': 3000, 'class': 'form-control', 'style': 'height: auto;'}}) }}
+            {{ form_errors(form.shopping.message) }}
+          </div>
+        </dd>
+      </dl>
+    </div>
+
+    {# カートボタン #}
+    <div style="text-align: center; padding: 10px;">
+      {% if EntryForm.customer_registration_enabled and (not loggedIn) %}
+        {{ form_widget(form.submit_with_entry, {class: "btn btn-primary btn-block", label: "会員登録して購入する"}) }}
+      {% endif %}
+
+      {{ form_widget(form.submit, {class: "btn btn-default btn-block", label: "購入する"}) }}
+    </div>
+
+    <div style="display: none;">
+      {{ form_rest(form) }}
+    </div>
+
+    {{ form_errors(form) }}
+  </form>
+  {# /購入フォーム #}
+{% endblock %}
